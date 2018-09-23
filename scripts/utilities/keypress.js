@@ -1,0 +1,81 @@
+export default new function() {
+    var a = this;
+    this.map = [];
+    this.tethers = [];
+    this.listen = function() {
+        document.onkeydown = function(e) {
+            e = e || window.event;
+            e = e.which || e.keyCode || 0;
+            if (a.map.indexOf(e) == -1) {
+                a.map.push(e);
+            }
+            a.tethers.forEach(function(tether, index) {
+                if (tether.type == "down") {
+                    if (e === tether.key) {
+                        tether.func();
+                        if (!tether.perma) a.tethers.splice(index, 1);
+                    }
+                }
+            });
+        };
+        document.onkeyup = function(e) {
+            e = e || window.event;
+            e = e.which || e.keyCode || 0;
+                // use e.keyCode
+            if (a.map.indexOf(e) != -1) {
+                a.map.splice(a.map.indexOf(e), 1);
+            }
+            a.tethers.forEach(function(tether, index) {
+                if (tether.type == "up") {
+                    if (e === tether.key) {
+                        tether.func();
+                        if (!tether.perma) a.tethers.splice(index, 1);
+                    }
+                }
+            });
+        };
+    };
+    this.check = function(key, callback, not) {
+        if (typeof key != "object") {
+            key = [key];
+        }
+        for (var i = 0; i < key.length; i++) {
+            if (a.map.indexOf(key[i]) != -1) {
+                callback();
+                i = key.length;
+                return true;
+            }
+        }
+        if (not !== undefined) {
+            not();
+        }
+        return false;
+    };
+    this.waitUp = function(key, func, perma) {
+        if (perma === undefined) {
+            perma = false;
+        }
+        a.tethers.push({
+            "key": key,
+            "func": func,
+            "type": "up",
+            "perma": perma
+        });
+    };
+    this.waitDown = function(key, func, perma,strictless) {
+        if (perma === undefined) {
+            perma = false;
+        }
+        if(a.tethers.every(function(val){
+            return key !== val.key
+        }) || strictless){
+            console.log("veritable beans")
+        a.tethers.push({
+            "key": key,
+            "func": func,
+            "type": "down",
+            "perma": perma
+        });
+        }
+    };
+}();
