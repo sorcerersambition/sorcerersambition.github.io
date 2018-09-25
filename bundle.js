@@ -742,6 +742,10 @@
 	
 	var _statbar2 = _interopRequireDefault(_statbar);
 	
+	var _animate = __webpack_require__(9);
+	
+	var _animate2 = _interopRequireDefault(_animate);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -775,195 +779,208 @@
 	            var active = "";
 	            var casting = function casting() {};
 	            var spellContainer = new PIXI.Container();
-	            obj.timer = new _fps2.default(function () {
-	                slashes.forEach(function (val, i) {
-	                    val.increment += 1;
-	                    if (val.increment >= active.animFrames) {
-	                        battle.removeChild(val);
-	                        slashes.splice(i, 1);
-	                    } else {
-	                        val.texture = PIXI.loader.resources["./assets/" + active.anim + "/" + val.increment + ".png"].texture;
-	                    }
-	                });
-	                if (obj.counter < 20) {
-	                    map.alpha -= 0.05;
-	                    obj.counter += 1;
-	                }
-	                if (obj.counter === 20) {
-	                    stage.removeChild(map);
-	                    stage.addChild(battle);
-	                    map.removeChild(enemy.sprite);
-	                    battle.addChild(enemy.sprite);
-	                    battle.alpha = 0;
-	                    enemy.sprite.texture = enemy.bigTex;
-	                    enemy.x = 702 / 2;
-	                    enemy.y = 64;
-	                    obj.counter += 1;
-	                    var wrapper = new PIXI.Sprite(PIXI.loader.resources["./assets/dialoguebox.png"].texture);
-	                    wrapper.y = 384;
-	                    battle.addChild(wrapper);
-	                }
-	                if (obj.counter > 20 && obj.counter < 40) {
 	
-	                    if (enemy.pure && obj.counter === 38 && worlds.indexOf(world) === 0) {
-	                        var _juice = function _juice() {
-	                            dialogue++;
-	                            txt.text = crunch[dialogue];
-	                            if (dialogue === crunch.length) {
-	                                obj.counter += 1;
-	                            } else {
-	                                key.waitDown(13, _juice, false, true);
-	                            }
-	                        };
-	
-	                        var dialogue = -1;
-	                        var txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
-	                        txt.x = 26;
-	                        txt.y = 412;
-	                        battle.addChild(txt);
-	
-	                        var crunch = ["Jaysun: Hello!", "Jaysun: My name’s Jaysun, what’s yours?", "???: You’re awfully young to be wandering here, any reason?", "Jaysun: Someone told me, there’s great powers hidden here!!", "???: Hmph, we have our dreams.", "???: I’d suggest your turn back now.", "Jaysun: What! Why?!", "???: A child like you doesn’t belong in this cave.", "Jaysun: I am strong!", "???: You’re a sorcerer, yes?", "Jaysun: Mhm, I’ve been practicing.", "???: How about, we duel. See how strong you really are.", "???: I’ll go easy."];
-	                        txt.text = crunch[0];
-	
-	                        _juice();
-	                        obj.counter += 1;
-	                    } else if (enemy.pure && obj.counter === 39) {} else {
-	                        obj.counter += 1;
-	                        battle.alpha += 0.05;
-	                    }
-	                } else if (obj.counter === 40) {
-	                    player.spells.forEach(function (spl, index) {
-	                        var spellHold = new PIXI.Container();
-	                        var spell = new PIXI.Sprite(_shapes2.default.rectangle(160, 64, "#ddd"));
-	                        var text = new PIXI.Text(spl.name, { fontFamily: 'Mono', fontSize: 16, fill: 0x000, wordWrap: true, wordWrapWidth: 140 });
-	                        text.x = 10;
-	                        text.y = 10;
-	                        spellHold.addChild(spell);
-	                        spellHold.addChild(text);
-	                        spellHold.x = index % 3 * 248 + 24;
-	                        spell.buttonMode = true;
-	                        spell.interactive = true;
-	                        spellHold.y = 410 + Math.floor(index / 3) * 72;
-	                        spell.on("click", function () {
-	                            if (player.mana < spl.cost) {
-	                                player.health -= Math.ceil((spl.cost - player.mana) / 5);
-	                                player.mana = 0;
-	                            } else {
-	                                player.mana -= spl.cost;
-	                            }
-	                            playerHealth.fill.width = player.health;
-	                            if (player.health <= 0) {
-	                                playerHealth.fill.width = 0;
-	                            }
-	                            playerMana.fill.width = player.mana;
-	                            if (player.mana <= 0) {
-	                                playerMana.fill.width = 0;
-	                            }
-	                            active = spl;
-	                            casting = spl.initiate();
-	                            console.log("hey");
-	                            obj.counter += 1;
-	                        });
-	                        spellContainer.addChild(spellHold);
-	                    });
-	                    battle.addChild(spellContainer);
-	                    obj.counter += 1;
-	                } else if (obj.counter === 41) {} else if (obj.counter === 42) {
-	                    console.log("");
-	                    obj.counter += 1;
-	                    spellContainer.children = "";
-	                    spellContainer = new PIXI.Container();
-	                } else if (obj.counter === 43) {
-	                    casting(function () {
-	                        if (enemy.health <= 0) {
-	                            casting(function () {}, function () {}, true);
-	                            enemy.sprite.alpha -= 0.01;
-	                            enemyHealth.fill.width = 0;
-	                            obj.counter += 1;
+	            var animate = new _animate2.default();
+	            //
+	            animate.addFrame(20, function () {
+	                map.alpha -= 0.05;
+	            }).addFrame(1, function () {
+	                stage.removeChild(map);
+	                stage.addChild(battle);
+	                map.removeChild(enemy.sprite);
+	                battle.addChild(enemy.sprite);
+	                battle.alpha = 0;
+	                enemy.sprite.texture = enemy.bigTex;
+	                enemy.x = 702 / 2;
+	                enemy.y = 64;
+	                obj.counter += 1;
+	                var wrapper = new PIXI.Sprite(PIXI.loader.resources["./assets/dialoguebox.png"].texture);
+	                wrapper.y = 384;
+	                battle.addChild(wrapper);
+	            }).addFrame(20, function () {
+	                battle.alpha += 0.05;
+	            }).addFrame(0, function (cb) {
+	                if (enemy.pure && worlds.indexOf(world) === 0) {
+	                    var _awaitEnter = function _awaitEnter() {
+	                        dialogue++;
+	                        txt.text = dialogueList[dialogue];
+	                        if (dialogue === dialogueList.length) {
+	                            cb();
 	                        } else {
-	                            enemyHealth.fill.width = enemy.health;
-	                            var slash = new PIXI.Sprite(PIXI.loader.resources["./assets/" + active.anim + "/1.png"].texture);
-	                            slash.x = 702 / 2 + Math.random() * 100 - 50;
-	                            slash.anchor.x = 0.5;
-	                            slash.y = 64 + enemy.sprite.height / 2 + Math.random() * 100 - 50;
-	                            slash.anchor.y = 0.5;
-	                            slash.increment = 1;
-	                            slashes.push(slash);
-	                            battle.addChild(slash);
+	                            key.waitDown(13, _awaitEnter, false, true);
 	                        }
-	                    }, function () {
-	                        obj.counter += 1;
-	                    }, false, enemy, player);
-	                } else if (obj.counter < 121) {
-	                    obj.counter += 1;
-	                    if (enemy.sprite.alpha <= 0.99) {
-	                        enemy.sprite.alpha -= 0.05;
-	                    }
-	                    if (enemy.sprite.alpha <= 0) {
-	                        obj.counter = 200;
-	                        map.alpha = 0;
-	                    }
-	                } else if (obj.counter >= 200) {
-	                    console.log("end encounter, give gold");
-	                    obj.counter += 1;
-	                    if (obj.counter > 250) {
-	                        stage.addChild(map);
-	                        battle.alpha -= 0.05;
-	                        map.alpha += 0.05;
-	                    }
-	                    if (map.alpha >= 1) {
-	                        stage.removeChild(battle);
-	                        map.removeChild(enemy);
-	                        enemies.splice(enemies.indexOf(enemy), 1);
-	                        loop.start();
-	                        obj.timer.stop();
-	                        battle.children.forEach(function (child) {
-	                            battle.removeChild(child);
-	                        });
-	                    }
-	                } else {
+	                    };
 	
+	                    var dialogue = -1;
+	                    var txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
+	                    txt.x = 26;
+	                    txt.y = 412;
+	                    battle.addChild(txt);
+	
+	                    var dialogueList = ["Jaysun: Hello!", "Jaysun: My name’s Jaysun, what’s yours?", "???: You’re awfully young to be wandering here, any reason?", "Jaysun: Someone told me, there’s great powers hidden here!!", "???: Hmph, we have our dreams.", "???: I’d suggest your turn back now.", "Jaysun: What! Why?!", "???: A child like you doesn’t belong in this cave.", "Jaysun: I am strong!", "???: You’re a sorcerer, yes?", "Jaysun: Mhm, I’ve been practicing.", "???: How about, we duel. See how strong you really are.", "???: I’ll go easy."];
+	                    txt.text = dialogueList[0];
+	
+	                    _awaitEnter();
+	                } else {
+	                    cb();
+	                }
+	            }).addFrame(0, function (cb) {
+	                player.spells.forEach(function (spl, index) {
+	                    var spellHold = new PIXI.Container();
+	                    var spell = new PIXI.Sprite(_shapes2.default.rectangle(160, 64, "#ddd"));
+	                    var text = new PIXI.Text(spl.name, { fontFamily: 'Mono', fontSize: 16, fill: 0x000, wordWrap: true, wordWrapWidth: 140 });
+	                    text.x = 10;
+	                    text.y = 10;
+	                    spellHold.addChild(spell);
+	                    spellHold.addChild(text);
+	                    spellHold.x = index % 3 * 248 + 24;
+	                    spell.buttonMode = true;
+	                    spell.interactive = true;
+	                    spellHold.y = 410 + Math.floor(index / 3) * 72;
+	                    spell.on("click", function () {
+	                        if (player.mana < spl.cost) {
+	                            player.health -= Math.ceil((spl.cost - player.mana) / 5);
+	                            player.mana = 0;
+	                        } else {
+	                            player.mana -= spl.cost;
+	                        }
+	                        playerHealth.fill.width = player.health;
+	                        if (player.health <= 0) {
+	                            playerHealth.fill.width = 0;
+	                        }
+	                        playerMana.fill.width = player.mana;
+	                        if (player.mana <= 0) {
+	                            playerMana.fill.width = 0;
+	                        }
+	                        active = spl;
+	                        casting = spl.initiate();
+	                        console.log("hey");
+	                        cb();
+	                    });
+	                    spellContainer.addChild(spellHold);
+	                });
+	                battle.addChild(spellContainer);
+	            }).addFrame(0, function () {
+	                console.log("");
+	                obj.counter += 1;
+	                spellContainer.children = "";
+	                spellContainer = new PIXI.Container();
+	            }).addFrame(0, function () {
+	                casting(function (cb) {
+	                    if (enemy.health <= 0) {
+	                        casting(function () {}, function () {}, true);
+	                        enemy.sprite.alpha -= 0.01;
+	                        enemyHealth.fill.width = 0;
+	                        cb();
+	                    } else {
+	                        enemyHealth.fill.width = enemy.health;
+	                        var slash = new PIXI.Sprite(PIXI.loader.resources["./assets/" + active.anim + "/1.png"].texture);
+	                        slash.x = 702 / 2 + Math.random() * 100 - 50;
+	                        slash.anchor.x = 0.5;
+	                        slash.y = 64 + enemy.sprite.height / 2 + Math.random() * 100 - 50;
+	                        slash.anchor.y = 0.5;
+	                        slash.increment = 1;
+	                        slashes.push(slash);
+	                        battle.addChild(slash);
+	                    }
+	                }, function () {
+	                    cb();
+	                }, false, enemy, player);
+	            }).addFrame(60, function () {
+	                if (enemy.sprite.alpha <= 0.99) {
+	                    enemy.sprite.alpha -= 0.05;
+	                }
+	                if (enemy.sprite.alpha <= 0) {
+	                    obj.counter = 200;
+	                    map.alpha = 0;
+	                }
+	            }).addFrame(50, function () {
+	                console.log("hey");
+	            });
+	            /* else if(obj.counter < 121){
+	                obj.counter+=1;
+	                if(enemy.sprite.alpha <= 0.99){
+	                    enemy.sprite.alpha -= 0.05;
+	                }
+	                if(enemy.sprite.alpha <= 0){
+	                    obj.counter = 200
+	                    map.alpha = 0;
+	                }
+	            } else if(obj.counter >= 200){
+	                console.log("end encounter, give gold");
+	                obj.counter+= 1;
+	                if(obj.counter > 250){
+	                    stage.addChild(map);
+	                    battle.alpha -= 0.05;
+	                    map.alpha += 0.05;
+	                }
+	                if(map.alpha >= 1){
+	                    stage.removeChild(battle);
+	                    map.removeChild(enemy);
+	                    enemies.splice(enemies.indexOf(enemy),1)
+	                    loop.start();
+	                    obj.timer.stop();
+	                    battle.children.forEach(function(child){
+	                        battle.removeChild(child);
+	                    })
+	                }
+	            } else{
+	                
 	                    player.health -= enemy.attack();
 	                    playerHealth.fill.width = player.health;
 	                    obj.counter = 40;
-	                    if (player.health <= 0) {
-	                        var _juice2 = function _juice2() {
-	                            _dialogue++;
-	                            _txt.text = _crunch[_dialogue];
-	                            if (_dialogue === _crunch.length) {
+	                    if(player.health <= 0){
+	                        obj.timer.stop()
+	                        casting(function(){},function(){},true);
+	                        let dialogue = -1;
+	                        let dialogueList = [
+	                            "???: You should turn back.",
+	                            "Jaysun: No!",
+	                            "*??? sighs*",
+	                            "Zygas: The name’s Zygas. Good luck in the dungeon."
+	                                  ]
+	                        let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
+	                        txt.x = 26;
+	                        txt.y = 412;
+	                        battle.addChild(txt);
+	                        txt.text = dialogueList[0]
+	                        function awaitEnter(){
+	                            dialogue ++;
+	                            txt.text = dialogueList[dialogue]
+	                            if(dialogue === dialogueList.length){
 	                                enemy.valid = false;
 	                                stage.addChild(map);
 	                                stage.removeChild(battle);
 	                                map.alpha = 1;
-	                                if (!enemy.pure) {
-	                                    map.removeChild(enemy);
-	                                    enemies.splice(enemies.indexOf(enemy), 1);
-	                                } else {
+	                                if(!enemy.pure){map.removeChild(enemy);
+	                                enemies.splice(enemies.indexOf(enemy),1)
+	                                } else{
 	                                    map.addChild(enemy.sprite);
 	                                }
 	                                loop.start();
 	                                obj.timer.stop();
-	                                battle.children.forEach(function (child) {
+	                                battle.children.forEach(function(child){
 	                                    battle.removeChild(child);
-	                                });
-	                            } else {
-	                                key.waitDown(13, _juice2, false, true);
+	                                })
+	                            } else{
+	                                key.waitDown(13,awaitEnter,false,true)
 	                            }
-	                        };
-	
-	                        obj.timer.stop();
-	                        casting(function () {}, function () {}, true);
-	                        var _dialogue = -1;
-	                        var _crunch = ["???: You should turn back.", "Jaysun: No!", "*??? sighs*", "Zygas: The name’s Zygas. Good luck in the dungeon."];
-	                        var _txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
-	                        _txt.x = 26;
-	                        _txt.y = 412;
-	                        battle.addChild(_txt);
-	                        _txt.text = _crunch[0];
-	
-	                        _juice2();
+	                        }
+	                        awaitEnter()
 	                    }
-	                }
+	            }
+	            */
+	            obj.timer = new _fps2.default(function () {
+	                animate.tick();
+	                /*slashes.forEach(function(val,i){
+	                    val.increment += 1;
+	                    if(val.increment >= active.animFrames){
+	                        battle.removeChild(val);
+	                        slashes.splice(i,1);
+	                      } else{
+	                        val.texture = PIXI.loader.resources["./assets/"+active.anim+"/"+val.increment+".png"].texture;
+	                    }
+	                })*/
 	            });
 	        }
 	    }]);
@@ -1046,6 +1063,109 @@
 	        this.sprite.addChild(new PIXI.Sprite(starts));
 	};
 	
+	exports.default = _class;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Frame = function () {
+		function Frame(duration, func, callback) {
+			_classCallCheck(this, Frame);
+	
+			this.progress = 0;
+			this.duration = duration;
+			this.func = func;
+			this.callback = callback;
+		}
+	
+		_createClass(Frame, [{
+			key: "tick",
+			value: function tick(animation) {
+				if (this.duration === 0 && this.progress === 0) {
+					var a = this;
+					this.progress++;
+					//don't pass progress, pass callback
+					this.func(function () {
+						animation.frames.shift();
+						animation.tick();
+					});
+					return true;
+				} else if (this.progress < this.duration) {
+					this.progress++;
+					//Passes the progress based on 0
+					this.func(this.progress / this.duration);
+					return true;
+				} else if (this.duration === 0) {
+					return true;
+				} else {
+					if (typeof this.callback == "function") {
+						this.callback();
+					}
+					return false;
+				}
+				return false;
+			}
+		}]);
+	
+		return Frame;
+	}();
+	
+	var _class = function () {
+		function _class() {
+			_classCallCheck(this, _class);
+	
+			this.frames = [];
+		}
+		/*
+	 addFrame
+	   - name:
+	     * Set to a name to add to a specific chain of animations
+	 	* Leave blank (null, 0, "", false, etc.) to be executed in the loop until completion as soon as declared.
+	   - duration:
+	     * How many ticks the animation will last for
+	   - func:
+	     * The code to be run in the animation sequence
+	   - callback (optional):
+	     * A function to be run after the completion of the animation
+	 */
+	
+	
+		_createClass(_class, [{
+			key: "addFrame",
+			value: function addFrame(duration, func, callback) {
+				if (this.frames === undefined) {
+					this.frames = [new Frame(duration, func, callback)];
+				} else {
+					this.frames.push(new Frame(duration, func, callback));
+				}
+				return this;
+			}
+		}, {
+			key: "tick",
+			value: function tick() {
+				var a = this;
+				//Sloppy way to get every synchronous way, how fun.
+				if (!a.frames[0].tick(a)) {
+					a.frames.shift();
+				}
+				return this;
+			}
+		}]);
+
+		return _class;
+	}();
+
 	exports.default = _class;
 
 /***/ })

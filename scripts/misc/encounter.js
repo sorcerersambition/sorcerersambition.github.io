@@ -1,6 +1,7 @@
 import shapes from "./../drawing/shapes.js";
 import fps from "./../utilities/fps.js";
 import statbar from "./statbar.js";
+import Animate from "./../utilities/animate.js";
 export default class{
     constructor(){
     }
@@ -42,22 +43,12 @@ export default class{
         let active = "";
         let casting = function(){};
         let spellContainer = new PIXI.Container();
-        obj.timer = new fps(function(){
-            slashes.forEach(function(val,i){
-                val.increment += 1;
-                if(val.increment >= active.animFrames){
-                    battle.removeChild(val);
-                    slashes.splice(i,1);
 
-                } else{
-                    val.texture = PIXI.loader.resources["./assets/"+active.anim+"/"+val.increment+".png"].texture;
-                }
-            })
-            if(obj.counter < 20){
+        let animate = new Animate();
+//
+            animate.addFrame(20,function(){
                 map.alpha -= 0.05
-                obj.counter += 1;
-            }
-            if(obj.counter === 20){
+            }).addFrame(1,function(){
                 stage.removeChild(map);
                 stage.addChild(battle);
                 map.removeChild(enemy.sprite);
@@ -70,17 +61,17 @@ export default class{
                 let wrapper = new PIXI.Sprite(PIXI.loader.resources["./assets/dialoguebox.png"].texture);
                 wrapper.y = 384;
                 battle.addChild(wrapper);
-            }
-            if(obj.counter > 20 && obj.counter < 40){
-                
-                if(enemy.pure && obj.counter === 38 && worlds.indexOf(world) === 0){
+            }).addFrame(20,function(){
+                battle.alpha += 0.05;
+            }).addFrame(0,function(cb){
+                if(enemy.pure && worlds.indexOf(world) === 0){
                     let dialogue = -1;
                     let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
                     txt.x = 26;
                     txt.y = 412;
                     battle.addChild(txt);
 
-                    let crunch = [
+                    let dialogueList = [
                         "Jaysun: Hello!",
                         "Jaysun: My name’s Jaysun, what’s yours?" ,
                         "???: You’re awfully young to be wandering here, any reason?" ,
@@ -96,26 +87,22 @@ export default class{
                         "???: I’ll go easy."
                         
                         ]
-                    txt.text = crunch[0]
-                    function juice(){
+                    txt.text = dialogueList[0]
+                    function awaitEnter(){
                         dialogue ++;
-                        txt.text = crunch[dialogue]
-                        if(dialogue === crunch.length){
-                            obj.counter += 1;
+                        txt.text = dialogueList[dialogue]
+                        if(dialogue === dialogueList.length){
+                            cb()
                         } else{
-                            key.waitDown(13,juice,false,true)
+                            key.waitDown(13,awaitEnter,false,true)
                         }
                     }
-                    juice()
-                    obj.counter +=1;
+                    awaitEnter()
                     
-                } else if(enemy.pure && obj.counter === 39){
-
                 } else{
-                    obj.counter+= 1;
-                    battle.alpha += 0.05;
+                    cb()
                 }
-            } else if(obj.counter === 40){
+            }).addFrame(0,function(cb){
                 player.spells.forEach(function(spl,index){
                     let spellHold = new PIXI.Container();
                     let spell = new PIXI.Sprite(shapes.rectangle(160,64,"#ddd"))
@@ -146,25 +133,24 @@ export default class{
                         active = spl;
                         casting = spl.initiate();
                         console.log("hey")
-                        obj.counter += 1;
+                        cb()
                     })
                     spellContainer.addChild(spellHold)
                     
                 })
                 battle.addChild(spellContainer);
-                obj.counter += 1;
-            } else if(obj.counter === 41){} else if (obj.counter === 42){
+            }).addFrame(0,function(){
                 console.log("")
                 obj.counter += 1;
                 spellContainer.children = ""
                 spellContainer = new PIXI.Container();
-            } else if(obj.counter === 43){
-                casting(function(){
+            }).addFrame(0,function(){
+                casting(function(cb){
                     if(enemy.health <= 0){
                         casting(function(){},function(){},true);
                         enemy.sprite.alpha -= 0.01;
                         enemyHealth.fill.width = 0;
-                        obj.counter += 1;
+                        cb()
                     } else{
                         enemyHealth.fill.width = enemy.health
                             let slash = new PIXI.Sprite(PIXI.loader.resources["./assets/"+active.anim+"/1.png"].texture);
@@ -177,9 +163,22 @@ export default class{
                             battle.addChild(slash);
                     }
                 },function(){
-                    obj.counter+=1;
+                    cb()
                 },false,enemy,player)
-            } else if(obj.counter < 121){
+            }).addFrame(60,function(){
+                if(enemy.sprite.alpha <= 0.99){
+                    enemy.sprite.alpha -= 0.05;
+                }
+                if(enemy.sprite.alpha <= 0){
+                    obj.counter = 200
+                    map.alpha = 0;
+                }
+            })
+
+            .addFrame(50,function(){
+                console.log("hey")
+            })
+            /* else if(obj.counter < 121){
                 obj.counter+=1;
                 if(enemy.sprite.alpha <= 0.99){
                     enemy.sprite.alpha -= 0.05;
@@ -215,7 +214,7 @@ export default class{
                         obj.timer.stop()
                         casting(function(){},function(){},true);
                         let dialogue = -1;
-                        let crunch = [
+                        let dialogueList = [
                             "???: You should turn back.",
                             "Jaysun: No!",
                             "*??? sighs*",
@@ -226,11 +225,11 @@ export default class{
                         txt.x = 26;
                         txt.y = 412;
                         battle.addChild(txt);
-                        txt.text = crunch[0]
-                        function juice(){
+                        txt.text = dialogueList[0]
+                        function awaitEnter(){
                             dialogue ++;
-                            txt.text = crunch[dialogue]
-                            if(dialogue === crunch.length){
+                            txt.text = dialogueList[dialogue]
+                            if(dialogue === dialogueList.length){
                                 enemy.valid = false;
                                 stage.addChild(map);
                                 stage.removeChild(battle);
@@ -246,12 +245,25 @@ export default class{
                                     battle.removeChild(child);
                                 })
                             } else{
-                                key.waitDown(13,juice,false,true)
+                                key.waitDown(13,awaitEnter,false,true)
                             }
                         }
-                        juice()
+                        awaitEnter()
                     }
             }
+*/
+        obj.timer = new fps(function(){
+            animate.tick()
+            /*slashes.forEach(function(val,i){
+                val.increment += 1;
+                if(val.increment >= active.animFrames){
+                    battle.removeChild(val);
+                    slashes.splice(i,1);
+
+                } else{
+                    val.texture = PIXI.loader.resources["./assets/"+active.anim+"/"+val.increment+".png"].texture;
+                }
+            })*/
         })
     }
 
