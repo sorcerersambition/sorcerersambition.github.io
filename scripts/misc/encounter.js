@@ -1,7 +1,7 @@
 import shapes from "./../drawing/shapes.js";
 import fps from "./../utilities/fps.js";
 import statbar from "./statbar.js";
-import Animate from "./../utilities/animate.js";
+import Animation from "./../utilities/animate.js";
 export default class{
     constructor(){
     }
@@ -44,11 +44,155 @@ export default class{
         let casting = function(){};
         let spellContainer = new PIXI.Container();
 
-        let animate = new Animate();
+
+
+        let animate = new Animation();
+
+
+        function turn(){
+            animate.addFrame(0,function(cb){ //Bring up spell casting menu and handle spellcasting. TODO: Add animation syntax.
+                player.spells.forEach(function(spl,index){
+                    let spellHold = new PIXI.Container();
+                    let spell = new PIXI.Sprite(shapes.rectangle(160,64,"#ddd"))
+                    let text = new PIXI.Text(spl.name,{fontFamily : 'Mono', fontSize: 16, fill : 0x000,wordWrap:true,wordWrapWidth:140})
+                    text.x = 10;
+                    text.y = 10;
+                    spellHold.addChild(spell);
+                    spellHold.addChild(text);
+                    spellHold.x = (index % 3) * 248 + 24;
+                    spell.buttonMode = true;
+                    spell.interactive = true;
+                    spellHold.y = 410 + Math.floor(index /3) * 72;
+                    spell.on("click",function(){
+                        if(player.mana < spl.cost){
+                            player.health -= Math.ceil((spl.cost - player.mana) / 5)
+                            player.mana = 0;
+                        } else{
+                            player.mana -= spl.cost;
+                        }
+                        playerHealth.fill.width = player.health;
+                        if(player.health <= 0){
+                            playerHealth.fill.width = 0;
+                        }
+                        playerMana.fill.width = player.mana
+                        if(player.mana <= 0){
+                            playerMana.fill.width = 0;
+                        }
+                        active = spl;
+                        casting = spl.initiate();
+                        cb()
+                    })
+                    spellContainer.addChild(spellHold)
+                    
+                })
+                battle.addChild(spellContainer);
+            }).addFrame(0,function(cb){ //Get rid of spellcasting menu
+                spellContainer.children = ""
+                spellContainer = new PIXI.Container();
+                cb()
+            }).addFrame(-1,function(cb){ //Handle spellcasting and spellcasting animations
+                casting(function(){
+                    if(enemy.health <= 0){
+                        casting(function(){},function(){},true);
+                        enemyHealth.fill.width = 0;
+                        cb()
+                    } else{
+                        enemyHealth.fill.width = enemy.health
+                            let slash = new PIXI.Sprite(PIXI.loader.resources["./assets/"+active.anim+"/1.png"].texture);
+                            slash.x = 702/2 + Math.random()*100 -50;
+                            slash.anchor.x = 0.5;
+                            slash.y = 64 + enemy.sprite.height / 2 + Math.random()*100 -50;
+                            slash.anchor.y = 0.5;
+                            battle.addChild(slash);
+                            animate.addAsync(active.animFrames,function(x){
+                                slash.texture = PIXI.loader.resources["./assets/"+active.anim+"/"+x+".png"].texture;
+                            },function(){
+                                battle.removeChild(slash);
+                            })
+                    }
+                },cb,false,enemy,player)
+            }).addFrame(-1,function(cb){ //If enemy is dying, end the loop.
+                if(enemy.health <= 0){
+                     enemy.sprite.alpha -= 0.05;
+                     if(enemy.sprite.alpha <= 0){
+                        console.log("end encounter, give gold");
+                        battle.alpha = 1;
+                        map.alpha = 0;
+                        animate.addFrame(20,function(){
+                            battle.alpha -= 0.05;
+                            map.alpha += 0.05;
+                        },function(){
+                            stage.addChild(map);
+                            stage.removeChild(battle);
+                            map.removeChild(enemy);
+                            enemies.splice(enemies.indexOf(enemy),1)
+                            loop.start();
+                            obj.timer.stop();
+                            battle.children.forEach(function(child){
+                                battle.removeChild(child);
+                            })
+                        })
+                        cb()
+                     }
+                } else{
+                    cb()
+                }
+            }).addFrame(0,function(cb){   
+                console.log("ayo")
+                    player.health -= enemy.attack();
+                    playerHealth.fill.width = player.health;
+                    if(player.health <= 0){
+                        casting(function(){},function(){},true);
+                        let dialogue = -1;
+                        let dialogueList = [
+                            "???: You should turn back.",
+                            "Jaysun: No!",
+                            "*??? sighs*",
+                            "Zygas: The name’s Zygas. Good luck in the dungeon."
+        
+                        ]
+                        let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
+                        txt.x = 26;
+                        txt.y = 412;
+                        battle.addChild(txt);
+                        txt.text = dialogueList[0]
+                        function awaitEnter(){
+                            dialogue ++;
+                            txt.text = dialogueList[dialogue]
+                            if(dialogue === dialogueList.length){
+                                enemy.valid = false;
+                                stage.addChild(map);
+                                stage.removeChild(battle);
+                                map.alpha = 1;
+                                if(!enemy.pure){map.removeChild(enemy);
+                                enemies.splice(enemies.indexOf(enemy),1)
+                                } else{
+                                    map.addChild(enemy.sprite);
+                                }
+                                loop.start();
+                                obj.timer.stop();
+                                battle.children.forEach(function(child){
+                                    battle.removeChild(child);
+                                })
+                            } else{
+                                key.waitDown(13,awaitEnter,false,true)
+                            }
+                        }
+                        awaitEnter()
+                    } else{
+                        console.log("burn?")
+                        turn()
+                        cb()
+                    }
+            })
+
+        }  
+
+
 //
             animate.addFrame(20,function(){
                 map.alpha -= 0.05
-            }).addFrame(1,function(){
+            }).addFrame(0,function(cb){ //Initialize the battle with a frameless frame
                 stage.removeChild(map);
                 stage.addChild(battle);
                 map.removeChild(enemy.sprite);
@@ -61,9 +205,11 @@ export default class{
                 let wrapper = new PIXI.Sprite(PIXI.loader.resources["./assets/dialoguebox.png"].texture);
                 wrapper.y = 384;
                 battle.addChild(wrapper);
-            }).addFrame(20,function(){
+                cb()
+            }).addFrame(20,function(){ //Fade in the battle
                 battle.alpha += 0.05;
-            }).addFrame(0,function(cb){
+            })
+            animate.addFrame(0,function(cb){ //Check if there is dialogue for the encounter, otherwise skip
                 if(enemy.pure && worlds.indexOf(world) === 0){
                     let dialogue = -1;
                     let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
@@ -102,110 +248,9 @@ export default class{
                 } else{
                     cb()
                 }
-            }).addFrame(0,function(cb){
-                player.spells.forEach(function(spl,index){
-                    let spellHold = new PIXI.Container();
-                    let spell = new PIXI.Sprite(shapes.rectangle(160,64,"#ddd"))
-                    let text = new PIXI.Text(spl.name,{fontFamily : 'Mono', fontSize: 16, fill : 0x000,wordWrap:true,wordWrapWidth:140})
-                    text.x = 10;
-                    text.y = 10;
-                    spellHold.addChild(spell);
-                    spellHold.addChild(text);
-                    spellHold.x = (index % 3) * 248 + 24;
-                    spell.buttonMode = true;
-                    spell.interactive = true;
-                    spellHold.y = 410 + Math.floor(index /3) * 72;
-                    spell.on("click",function(){
-                        if(player.mana < spl.cost){
-                            player.health -= Math.ceil((spl.cost - player.mana) / 5)
-                            player.mana = 0;
-                        } else{
-                            player.mana -= spl.cost;
-                        }
-                        playerHealth.fill.width = player.health;
-                        if(player.health <= 0){
-                            playerHealth.fill.width = 0;
-                        }
-                        playerMana.fill.width = player.mana
-                        if(player.mana <= 0){
-                            playerMana.fill.width = 0;
-                        }
-                        active = spl;
-                        casting = spl.initiate();
-                        console.log("hey")
-                        cb()
-                    })
-                    spellContainer.addChild(spellHold)
-                    
-                })
-                battle.addChild(spellContainer);
-            }).addFrame(0,function(){
-                console.log("")
-                obj.counter += 1;
-                spellContainer.children = ""
-                spellContainer = new PIXI.Container();
-            }).addFrame(0,function(){
-                casting(function(cb){
-                    if(enemy.health <= 0){
-                        casting(function(){},function(){},true);
-                        enemy.sprite.alpha -= 0.01;
-                        enemyHealth.fill.width = 0;
-                        cb()
-                    } else{
-                        enemyHealth.fill.width = enemy.health
-                            let slash = new PIXI.Sprite(PIXI.loader.resources["./assets/"+active.anim+"/1.png"].texture);
-                            slash.x = 702/2 + Math.random()*100 -50;
-                            slash.anchor.x = 0.5;
-                            slash.y = 64 + enemy.sprite.height / 2 + Math.random()*100 -50;
-                            slash.anchor.y = 0.5;
-                            slash.increment = 1;
-                            slashes.push(slash);
-                            battle.addChild(slash);
-                    }
-                },function(){
-                    cb()
-                },false,enemy,player)
-            }).addFrame(60,function(){
-                if(enemy.sprite.alpha <= 0.99){
-                    enemy.sprite.alpha -= 0.05;
-                }
-                if(enemy.sprite.alpha <= 0){
-                    obj.counter = 200
-                    map.alpha = 0;
-                }
             })
-
-            .addFrame(50,function(){
-                console.log("hey")
-            })
-            /* else if(obj.counter < 121){
-                obj.counter+=1;
-                if(enemy.sprite.alpha <= 0.99){
-                    enemy.sprite.alpha -= 0.05;
-                }
-                if(enemy.sprite.alpha <= 0){
-                    obj.counter = 200
-                    map.alpha = 0;
-                }
-            } else if(obj.counter >= 200){
-                console.log("end encounter, give gold");
-                obj.counter+= 1;
-                if(obj.counter > 250){
-                    stage.addChild(map);
-                    battle.alpha -= 0.05;
-                    map.alpha += 0.05;
-                }
-                if(map.alpha >= 1){
-                    stage.removeChild(battle);
-                    map.removeChild(enemy);
-                    enemies.splice(enemies.indexOf(enemy),1)
-                    loop.start();
-                    obj.timer.stop();
-                    battle.children.forEach(function(child){
-                        battle.removeChild(child);
-                    })
-                }
-            } else{
+            turn()
+            /* else{
                 
                     player.health -= enemy.attack();
                     playerHealth.fill.width = player.health;

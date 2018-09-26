@@ -6,7 +6,7 @@ class Frame {
 		this.callback = callback;
 	}
 	tick(animation) {
-		if(this.duration === 0 && this.progress === 0){
+		if((this.duration === 0 && this.progress === 0) || this.duration === -1){
 			let a = this;
 			this.progress++;
 			//don't pass progress, pass callback
@@ -20,7 +20,7 @@ class Frame {
 		else if (this.progress < this.duration) {
 			this.progress++;
 			//Passes the progress based on 0
-			this.func(this.progress / this.duration);
+			this.func(this.progress);
 			return true;
 		} else if(this.duration === 0){
 			return true;
@@ -36,6 +36,7 @@ class Frame {
 export default class{
 	constructor() {
 		this.frames = [];
+		this.async = [];
 	}
 	/*
 	addFrame
@@ -50,11 +51,11 @@ export default class{
 	    * A function to be run after the completion of the animation
 	*/
 	addFrame(duration, func, callback) {
-			if (this.frames === undefined) {
-				this.frames = [new Frame(duration, func, callback)];
-			} else {
-				this.frames.push(new Frame(duration, func, callback));
-			}
+		this.frames.push(new Frame(duration, func, callback));
+		return this;
+	}
+	addAsync(duration,func,callback){
+		this.async.push(new Frame(duration, func, callback));
 		return this;
 	}
 	tick() {
@@ -62,6 +63,11 @@ export default class{
 		//Sloppy way to get every synchronous way, how fun.
 		if (!a.frames[0].tick(a)) {
 			a.frames.shift();
+		}
+		for(let i = this.async.length - 1;i >= 0;i--){
+			if (!this.async[i].tick(a)) {
+				this.async.splice(i,1)
+			}
 		}
 		return this;
 	}
