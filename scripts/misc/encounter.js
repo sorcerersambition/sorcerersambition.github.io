@@ -2,6 +2,7 @@ import shapes from "./../drawing/shapes.js";
 import fps from "./../utilities/fps.js";
 import statbar from "./statbar.js";
 import Animation from "./../utilities/animate.js";
+import Dialogue from "./dialogue";
 export default class{
     constructor(){
     }
@@ -46,8 +47,7 @@ export default class{
 
 
 
-        let animate = new Animation();
-
+        window.animate = new Animation();
 
         function turn(){
             animate.addFrame(0,function(cb){ //Bring up spell casting menu and handle spellcasting. TODO: Add animation syntax.
@@ -64,6 +64,7 @@ export default class{
                     spell.interactive = true;
                     spellHold.y = 410 + Math.floor(index /3) * 72;
                     spell.on("click",function(){
+                        active = spl;
                         if(player.mana < spl.cost){
                             player.health -= Math.ceil((spl.cost - player.mana) / 5)
                             player.mana = 0;
@@ -78,7 +79,6 @@ export default class{
                         if(player.mana <= 0){
                             playerMana.fill.width = 0;
                         }
-                        active = spl;
                         casting = spl.initiate();
                         cb()
                     })
@@ -138,49 +138,17 @@ export default class{
                     cb()
                 }
             }).addFrame(0,function(cb){   
-                console.log("ayo")
                     player.health -= enemy.attack();
                     playerHealth.fill.width = player.health;
                     if(player.health <= 0){
                         casting(function(){},function(){},true);
-                        let dialogue = -1;
-                        let dialogueList = [
-                            "???: You should turn back.",
+                        new Dialogue(["???: You should turn back.",
                             "Jaysun: No!",
                             "*??? sighs*",
                             "Zygas: The name’s Zygas. Good luck in the dungeon."
         
-                        ]
-                        let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
-                        txt.x = 26;
-                        txt.y = 412;
-                        battle.addChild(txt);
-                        txt.text = dialogueList[0]
-                        function awaitEnter(){
-                            dialogue ++;
-                            txt.text = dialogueList[dialogue]
-                            if(dialogue === dialogueList.length){
-                                enemy.valid = false;
-                                stage.addChild(map);
-                                stage.removeChild(battle);
-                                map.alpha = 1;
-                                if(!enemy.pure){map.removeChild(enemy);
-                                enemies.splice(enemies.indexOf(enemy),1)
-                                } else{
-                                    map.addChild(enemy.sprite);
-                                }
-                                loop.start();
-                                obj.timer.stop();
-                                battle.children.forEach(function(child){
-                                    battle.removeChild(child);
-                                })
-                            } else{
-                                key.waitDown(13,awaitEnter,false,true)
-                            }
-                        }
-                        awaitEnter()
+                        ],cb)
                     } else{
-                        console.log("burn?")
                         turn()
                         cb()
                     }
@@ -211,13 +179,7 @@ export default class{
             })
             animate.addFrame(0,function(cb){ //Check if there is dialogue for the encounter, otherwise skip
                 if(enemy.pure && worlds.indexOf(world) === 0){
-                    let dialogue = -1;
-                    let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
-                    txt.x = 26;
-                    txt.y = 412;
-                    battle.addChild(txt);
-
-                    let dialogueList = [
+                    new Dialogue([
                         "Jaysun: Hello!",
                         "Jaysun: My name’s Jaysun, what’s yours?" ,
                         "???: You’re awfully young to be wandering here, any reason?" ,
@@ -232,20 +194,10 @@ export default class{
                         "???: How about, we duel. See how strong you really are.",
                         "???: I’ll go easy."
                         
-                        ]
-                    txt.text = dialogueList[0]
-                    function awaitEnter(){
-                        dialogue ++;
-                        txt.text = dialogueList[dialogue]
-                        if(dialogue === dialogueList.length){
-                            cb()
-                        } else{
-                            key.waitDown(13,awaitEnter,false,true)
-                        }
-                    }
-                    awaitEnter()
+                        ],cb)
                     
                 } else{
+                    console.log("JESUS")
                     cb()
                 }
             })

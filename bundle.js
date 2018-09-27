@@ -746,6 +746,10 @@
 	
 	var _animate2 = _interopRequireDefault(_animate);
 	
+	var _dialogue = __webpack_require__(10);
+	
+	var _dialogue2 = _interopRequireDefault(_dialogue);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -780,7 +784,7 @@
 	            var casting = function casting() {};
 	            var spellContainer = new PIXI.Container();
 	
-	            var animate = new _animate2.default();
+	            window.animate = new _animate2.default();
 	
 	            function turn() {
 	                animate.addFrame(0, function (cb) {
@@ -798,6 +802,7 @@
 	                        spell.interactive = true;
 	                        spellHold.y = 410 + Math.floor(index / 3) * 72;
 	                        spell.on("click", function () {
+	                            active = spl;
 	                            if (player.mana < spl.cost) {
 	                                player.health -= Math.ceil((spl.cost - player.mana) / 5);
 	                                player.mana = 0;
@@ -812,7 +817,6 @@
 	                            if (player.mana <= 0) {
 	                                playerMana.fill.width = 0;
 	                            }
-	                            active = spl;
 	                            casting = spl.initiate();
 	                            cb();
 	                        });
@@ -874,46 +878,12 @@
 	                        cb();
 	                    }
 	                }).addFrame(0, function (cb) {
-	                    console.log("ayo");
 	                    player.health -= enemy.attack();
 	                    playerHealth.fill.width = player.health;
 	                    if (player.health <= 0) {
-	                        var _awaitEnter = function _awaitEnter() {
-	                            dialogue++;
-	                            txt.text = dialogueList[dialogue];
-	                            if (dialogue === dialogueList.length) {
-	                                enemy.valid = false;
-	                                stage.addChild(map);
-	                                stage.removeChild(battle);
-	                                map.alpha = 1;
-	                                if (!enemy.pure) {
-	                                    map.removeChild(enemy);
-	                                    enemies.splice(enemies.indexOf(enemy), 1);
-	                                } else {
-	                                    map.addChild(enemy.sprite);
-	                                }
-	                                loop.start();
-	                                obj.timer.stop();
-	                                battle.children.forEach(function (child) {
-	                                    battle.removeChild(child);
-	                                });
-	                            } else {
-	                                key.waitDown(13, _awaitEnter, false, true);
-	                            }
-	                        };
-	
 	                        casting(function () {}, function () {}, true);
-	                        var dialogue = -1;
-	                        var dialogueList = ["???: You should turn back.", "Jaysun: No!", "*??? sighs*", "Zygas: The name’s Zygas. Good luck in the dungeon."];
-	                        var txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
-	                        txt.x = 26;
-	                        txt.y = 412;
-	                        battle.addChild(txt);
-	                        txt.text = dialogueList[0];
-	
-	                        _awaitEnter();
+	                        new _dialogue2.default(["???: You should turn back.", "Jaysun: No!", "*??? sighs*", "Zygas: The name’s Zygas. Good luck in the dungeon."], cb);
 	                    } else {
-	                        console.log("burn?");
 	                        turn();
 	                        cb();
 	                    }
@@ -945,27 +915,9 @@
 	            animate.addFrame(0, function (cb) {
 	                //Check if there is dialogue for the encounter, otherwise skip
 	                if (enemy.pure && worlds.indexOf(world) === 0) {
-	                    var _awaitEnter2 = function _awaitEnter2() {
-	                        dialogue++;
-	                        txt.text = dialogueList[dialogue];
-	                        if (dialogue === dialogueList.length) {
-	                            cb();
-	                        } else {
-	                            key.waitDown(13, _awaitEnter2, false, true);
-	                        }
-	                    };
-	
-	                    var dialogue = -1;
-	                    var txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
-	                    txt.x = 26;
-	                    txt.y = 412;
-	                    battle.addChild(txt);
-	
-	                    var dialogueList = ["Jaysun: Hello!", "Jaysun: My name’s Jaysun, what’s yours?", "???: You’re awfully young to be wandering here, any reason?", "Jaysun: Someone told me, there’s great powers hidden here!!", "???: Hmph, we have our dreams.", "???: I’d suggest your turn back now.", "Jaysun: What! Why?!", "???: A child like you doesn’t belong in this cave.", "Jaysun: I am strong!", "???: You’re a sorcerer, yes?", "Jaysun: Mhm, I’ve been practicing.", "???: How about, we duel. See how strong you really are.", "???: I’ll go easy."];
-	                    txt.text = dialogueList[0];
-	
-	                    _awaitEnter2();
+	                    new _dialogue2.default(["Jaysun: Hello!", "Jaysun: My name’s Jaysun, what’s yours?", "???: You’re awfully young to be wandering here, any reason?", "Jaysun: Someone told me, there’s great powers hidden here!!", "???: Hmph, we have our dreams.", "???: I’d suggest your turn back now.", "Jaysun: What! Why?!", "???: A child like you doesn’t belong in this cave.", "Jaysun: I am strong!", "???: You’re a sorcerer, yes?", "Jaysun: Mhm, I’ve been practicing.", "???: How about, we duel. See how strong you really are.", "???: I’ll go easy."], cb);
 	                } else {
+	                    console.log("JESUS");
 	                    cb();
 	                }
 	            });
@@ -1093,17 +1045,17 @@
 	
 	        var body = new PIXI.Sprite(bodys);
 	        body.x = 28;
-	        body.width = max + 2;
+	        body.width = max - 2;
 	        this.sprite.addChild(body);
 	
 	        this.fill = new PIXI.Sprite(shades);
 	        this.fill.x = 28;
 	        this.fill.y = 10;
-	        this.fill.width = fills + 4;
+	        this.fill.width = fills;
 	        this.sprite.addChild(this.fill);
 	
 	        var end = new PIXI.Sprite(ends);
-	        end.x = max - 2 + 30;
+	        end.x = max - 6 + 30;
 	        this.sprite.addChild(end);
 	
 	        this.sprite.addChild(new PIXI.Sprite(starts));
@@ -1126,20 +1078,22 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Frame = function () {
-		function Frame(duration, func, callback) {
+		function Frame(duration, func, callback, type) {
 			_classCallCheck(this, Frame);
 	
 			this.progress = 0;
 			this.duration = duration;
 			this.func = func;
 			this.callback = callback;
+			this.type = type;
 		}
 	
 		_createClass(Frame, [{
 			key: "tick",
 			value: function tick(animation) {
+				var a = this;
 				if (this.duration === 0 && this.progress === 0 || this.duration === -1) {
-					var a = this;
+					console.log(this.type);
 					this.progress++;
 					//don't pass progress, pass callback
 					this.func(function () {
@@ -1148,9 +1102,10 @@
 					});
 					return true;
 				} else if (this.progress < this.duration) {
+					console.log('hey');
 					this.progress++;
 					//Passes the progress based on 0
-					this.func(this.progress);
+					this.func(this.progress, a);
 					return true;
 				} else if (this.duration === 0) {
 					return true;
@@ -1191,13 +1146,13 @@
 		_createClass(_class, [{
 			key: "addFrame",
 			value: function addFrame(duration, func, callback) {
-				this.frames.push(new Frame(duration, func, callback));
+				this.frames.push(new Frame(duration, func, callback, "sync"));
 				return this;
 			}
 		}, {
 			key: "addAsync",
 			value: function addAsync(duration, func, callback) {
-				this.async.push(new Frame(duration, func, callback));
+				this.async.push(new Frame(duration, func, callback, "async"));
 				return this;
 			}
 		}, {
@@ -1220,6 +1175,61 @@
 		return _class;
 	}();
 
+	exports.default = _class;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var _class = function _class(text, cb) {
+	    _classCallCheck(this, _class);
+	
+	    var dialogueList = text;
+	    var txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
+	    txt.x = 26;
+	    txt.y = 412;
+	    battle.addChild(txt);
+	    var dialogue = -1;
+	    function txtAnim(text, callback) {
+	        var total = "";
+	        var dia = void 0;
+	        if (text.indexOf(":") === -1) {
+	            dia = ["", text];
+	        } else {
+	            dia = text.split(":");
+	        }
+	        animate.addAsync(dia[1].length * 1 + 1, function (x, a) {
+	            if (dia[1][x] === " ") {
+	                a.tick(a);
+	            } else if (x % 1 === 0) {
+	                txt.text = dia[0] + ":" + dia[1].substring(0, x / 1);
+	            }
+	        }, callback);
+	    }
+	    function awaitEnter() {
+	        dialogue++;
+	        txtAnim(dialogueList[dialogue], function () {
+	            if (dialogue === dialogueList.length - 1) {
+	                animate.async = [];
+	                txt.text = "";
+	                console.log("JESUS");
+	                cb();
+	            } else {
+	                key.waitDown(13, awaitEnter, false, true);
+	            }
+	        });
+	    }
+	    awaitEnter();
+	};
+	
 	exports.default = _class;
 
 /***/ })

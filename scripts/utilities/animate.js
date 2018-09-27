@@ -1,13 +1,15 @@
 class Frame {
-	constructor(duration, func, callback) {
+	constructor(duration, func, callback,type) {
 		this.progress = 0;
 		this.duration = duration;
 		this.func = func;
 		this.callback = callback;
+		this.type = type
 	}
 	tick(animation) {
+		let a = this;
 		if((this.duration === 0 && this.progress === 0) || this.duration === -1){
-			let a = this;
+			console.log(this.type);
 			this.progress++;
 			//don't pass progress, pass callback
 			this.func(
@@ -18,9 +20,10 @@ class Frame {
 			return true;
 		}
 		else if (this.progress < this.duration) {
+			console.log('hey')
 			this.progress++;
 			//Passes the progress based on 0
-			this.func(this.progress);
+			this.func(this.progress,a);
 			return true;
 		} else if(this.duration === 0){
 			return true;
@@ -51,11 +54,11 @@ export default class{
 	    * A function to be run after the completion of the animation
 	*/
 	addFrame(duration, func, callback) {
-		this.frames.push(new Frame(duration, func, callback));
+		this.frames.push(new Frame(duration, func, callback,"sync"));
 		return this;
 	}
 	addAsync(duration,func,callback){
-		this.async.push(new Frame(duration, func, callback));
+		this.async.push(new Frame(duration, func, callback,"async"));
 		return this;
 	}
 	tick() {
