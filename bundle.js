@@ -76,23 +76,22 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	window.worlds = ["11111111\n1p000001\n10000001\n10000001\n10000z01\n10000011\n100000s1\n11111111".split("\n"), "11111111\n1p010001\n10e1e1e1\n100001s1\n11111111".split("\n"), "111111111\n1p0rF0s1\n11111111".split("\n"), "1111111111111111111111111111\n1p00000000000000000000000001\n1eee00rrr0000000000000rrr001\n1e00e0r000000e000e0000r0r001\n1e00e0rrr000ee00e0e000r0r001\n1e00e0r0000e0e0e000e00r0r001\n1eee00rrr0e00ee00000e0rrr001\n1111111111111111111111111111".split("\n")]; //Create a Pixi Application
+	window.worlds = ["11111111\n1p000001\n10000001\n10000001\n10000z01\t\n10000011\n100000s1\n11111111".split("\n"), "11111111\n1p010001\n10e1e1e1\n100001s1\n11111111".split("\n"), "111111111\n1p0rF0s1\n11111111".split("\n"), "1111111111111111111111111111\n1p00000000000000000000000001\n1eee00rrr0000000000000rrr001\n1e00e0r000000e000e0000r0r001\n1e00e0rrr000ee00e0e000r0r001\n1e00e0r0000e0e0e000e00r0r001\n1eee00rrr0e00ee00000e0rrr001\n1111111111111111111111111111".split("\n")]; //Create a Pixi Application
 	
 	worlds = worlds.map(function (arr) {
-	  return arr.map(function (val) {
-	    return val.split("");
-	  });
+		return arr.map(function (val) {
+			return val.split("");
+		});
 	});
 	window.world = window.worlds[0];
 	window.key = _keypress2.default;
 	_keypress2.default.listen();
 	window.g = {};
 	window.app = new PIXI.Application(702, 576, {
-	  backgroundColor: 0x000000,
-	  antialias: true
+		backgroundColor: 0x000000,
+		antialias: true
 	});
 	window.stage = app.stage;
-	
 	/*
 	<3<3<3
 	flashback to sensitive rectangle moving along grid
@@ -113,148 +112,168 @@
 	PIXI.loader.add("./assets/hpblue.png").add("./assets/firerat.png").add("./assets/fireratbig.png").add("./assets/dialoguebox.png").add("./assets/gold.png").add("./assets/stair.png").add("./assets/zeegas.png").add("./assets/slash/1.png").add("./assets/slash/2.png").add("./assets/slash/3.png").add("./assets/slash/4.png").add("./assets/slash/5.png").add("./assets/slash/6.png").add("./assets/slash/7.png").add("./assets/slash/8.png").add("./assets/slash/9.png").add("./assets/slash/10.png").add("./assets/slash/11.png").add("./assets/slash/12.png").add("./assets/slash/13.png").add("./assets/slash/14.png").add("./assets/flame/1.png").add("./assets/flame/2.png").add("./assets/flame/3.png").add("./assets/flame/4.png").add("./assets/flame/5.png").add("./assets/flame/6.png").add("./assets/flame/7.png").add("./assets/flame/8.png").add("./assets/flame/9.png").add("./assets/flame/10.png").add("./assets/flame/11.png").add("./assets/flame/12.png").add("./assets/flame/13.png").add("./assets/flame/14.png").add("./assets/flame/15.png").add("./assets/water/1.png").add("./assets/water/2.png").add("./assets/water/3.png").add("./assets/water/4.png").add("./assets/water/5.png").add("./assets/water/6.png").add("./assets/water/7.png").add("./assets/slimebig.png").add("./assets/evstart.png").add("./assets/evbodyfill.png").add("./assets/evbody.png").add("./assets/evend.png").add("./assets/mpbodyfill.png").add("./assets/mpstart.png").add("./assets/hpbodyfill.png").add("./assets/hpstart.png").add("./assets/goldend.png").add("./assets/goldbody.png").add("./assets/tile.png").add("./assets/slime.png").add("./assets/qg.png").add("./assets/qw.png").add("./assets/ag.png").add("./assets/aw.png").add("./assets/steve.png").add("./assets/steve-2.png").add("./assets/menu.png").add("./assets/runes/A.png").add("./assets/runes/F.png").add("./assets/runes/Q.png").add("./assets/runes/R.png").add("./assets/runes/W.png").add("./assets/steve-stand.png").load(fonts);
 	
 	function fonts() {
-	  WebFont.load({
-	    custom: {
-	      families: ['Mono'],
-	      urls: ["stylesheet.css"]
-	    },
-	    active: function active(e) {
-	      console.log("font loaded!");
-	      // now start setting up your PixiJS (or canvas) stuff!
-	      setup();
-	    }
-	  });
+		WebFont.load({
+			custom: {
+				families: ['Mono'],
+				urls: ["stylesheet.css"]
+			},
+			active: function active(e) {
+				console.log("font loaded!");
+				// now start setting up your PixiJS (or canvas) stuff!
+				setup();
+			}
+		});
 	}
 	document.body.appendChild(app.view);
+	
 	function setup() {
-	  function build(wrld) {
-	    window.map = new PIXI.Container();
-	    window.barriers = [];
-	    window.battle = new PIXI.Container();
-	    window.enemies = [];
-	    stage.addChild(window.map);
-	    var barriers = new PIXI.Container();
-	    map.addChild(barriers);
-	    world = wrld;
-	    window.player = new _player2.default();
-	    window.tall = [];
-	    window.tall.sort(function (a, b) {
-	      return a.y - b.y;
-	    });
-	    window.tall.forEach(function (val) {
-	      map.removeChild(val);
-	      map.addChild(val);
-	    });
-	    function bg(i, j) {
-	      var tile = new PIXI.Sprite(PIXI.loader.resources["./assets/tile.png"].texture);
-	      tile.anchor.x = 0.5;
-	      tile.x = j * 64 + 32 + 1;
-	      tile.y = i * 64;
-	      tile.coord = { "x": i, "y": j };
-	      barriers.addChild(tile);
-	    }
-	    for (var i = 0; i < wrld.length; i++) {
-	      for (var j = 0; j < wrld[i].length; j++) {
-	        if (wrld[i][j] === "1") {
-	          var wall = new PIXI.Sprite(_shapes2.default.rectangle(64, 64, "#000"));
-	          wall.anchor.x = 0.5;
-	          wall.x = j * 64 + 32 + 1;
-	          wall.y = i * 64;
-	          wall.coord = { "x": i, "y": j };
-	          barriers.addChild(wall);
-	        }
-	        if (wrld[i][j] === "F") {
-	          bg(i, j);
-	          var fire = new PIXI.Sprite(PIXI.loader.resources["./assets/runes/F.png"].texture);
-	          fire.anchor.x = 0.5;
-	          fire.scale.x = 0.25;
-	          fire.scale.y = 0.25;
-	          fire.x = j * 64 + 32 + 1;
-	          fire.y = i * 64;
-	          fire.coord = { "x": i, "y": j };
-	          barriers.addChild(fire);
-	        }
-	        if (wrld[i][j] === "0") {
-	          bg(i, j);
-	        }
-	        if (wrld[i][j] === "p") {
-	          map.x -= j * 64 - 351;
-	          map.y -= i * 64 - 576 / 2;
-	          player.x += j * 64 - 351 + 32;
-	          player.y += i * 64 - 576 / 2 - 32;
-	          player.coord.x = j;
-	          player.coord.y = i;
-	          tall.push(player.sprite);
-	          bg(i, j);
-	        }
-	        if (wrld[i][j] === "s") {
-	          var stair = new PIXI.Sprite(PIXI.loader.resources["./assets/stair.png"].texture);
-	          stair.anchor.x = 0.5;
-	          stair.x = j * 64 + 32 + 1;
-	          stair.y = i * 64;
-	          stair.coord = { "x": i, "y": j };
-	          map.addChild(stair);
-	        }
-	        if (wrld[i][j] === "e") {
-	          var slime = new _enemy2.default(50, function () {
-	            return 5;
-	          }, PIXI.loader.resources["./assets/slimebig.png"].texture, PIXI.loader.resources["./assets/slime.png"].texture);
-	          slime.x += j * 64;
-	          slime.y += i * 64;
-	          slime.coord.x = j;
-	          slime.coord.y = i;
-	          enemies.push(slime);
-	          bg(i, j);
-	        }
-	        if (wrld[i][j] === "r") {
-	          var firerat = new _enemy2.default(150, function () {
-	            return 10;
-	          }, PIXI.loader.resources["./assets/fireratbig.png"].texture, PIXI.loader.resources["./assets/firerat.png"].texture);
-	          firerat.x += j * 64;
-	          firerat.y += i * 64 - 78;
-	          firerat.coord.x = j;
-	          firerat.coord.y = i;
-	          enemies.push(firerat);
-	          tall.push(firerat.sprite);
-	          bg(i, j);
-	        }
-	        if (wrld[i][j] === "z") {
-	          var zig = new _enemy2.default(500, function () {
-	            return 25;
-	          }, PIXI.loader.resources["./assets/zeegas.png"].texture, PIXI.loader.resources["./assets/zeegas.png"].texture);
-	          zig.x += j * 64;
-	          zig.y += i * 64 - 78;
-	          zig.pure = true;
-	          zig.coord.x = j;
-	          zig.coord.y = i;
-	          console.log(zig);
-	          enemies.push(zig);
-	          tall.push(zig.sprite);
-	          bg(i, j);
-	        }
-	      }
-	    }
-	  }
-	  build(worlds[0]);
-	  window.loop = new _fps2.default(function () {
-	    //console.log(slime.x,",",slime.y)
-	    //console.log(player.x,",",player.y)
-	    player.move();
-	    if (world[player.coord.y][player.coord.x] === "s") {
-	      while (stage.children[0]) {
-	        stage.removeChild(stage.children[0]);
-	      }
-	      build(worlds[worlds.indexOf(world) + 1]);
-	    }
-	    enemies.forEach(function (val) {
-	      if (val.coord.x === player.coord.x && val.coord.y === player.coord.y && val.valid !== false) {
-	        loop.stop();
-	        var battle = new _encounter2.default();
-	        battle.start(player, val);
-	      }
-	    });
-	    app.render(map);
-	  });
+		function build(wrld) {
+			window.map = new PIXI.Container();
+			window.barriers = [];
+			window.battle = new PIXI.Container();
+			window.enemies = [];
+			stage.addChild(window.map);
+			var barriers = new PIXI.Container();
+			map.addChild(barriers);
+			world = wrld;
+			window.player = window.player || new _player2.default();
+			map.addChild(player.sprite);
+			window.tall = [];
+			window.tall.sort(function (a, b) {
+				return a.y - b.y;
+			});
+			window.tall.forEach(function (val) {
+				map.removeChild(val);
+				map.addChild(val);
+			});
+	
+			function bg(i, j) {
+				var tile = new PIXI.Sprite(PIXI.loader.resources["./assets/tile.png"].texture);
+				tile.anchor.x = 0.5;
+				tile.x = j * 64 + 32 + 1;
+				tile.y = i * 64;
+				tile.coord = {
+					"x": i,
+					"y": j
+				};
+				barriers.addChild(tile);
+			}
+			for (var i = 0; i < wrld.length; i++) {
+				for (var j = 0; j < wrld[i].length; j++) {
+					if (wrld[i][j] === "1") {
+						var wall = new PIXI.Sprite(_shapes2.default.rectangle(64, 64, "#000"));
+						wall.anchor.x = 0.5;
+						wall.x = j * 64 + 32 + 1;
+						wall.y = i * 64;
+						wall.coord = {
+							"x": i,
+							"y": j
+						};
+						barriers.addChild(wall);
+					}
+					if (wrld[i][j] === "F") {
+						bg(i, j);
+						var fire = new PIXI.Sprite(PIXI.loader.resources["./assets/runes/F.png"].texture);
+						fire.anchor.x = 0.5;
+						fire.scale.x = 0.25;
+						fire.scale.y = 0.25;
+						fire.x = j * 64 + 32 + 1;
+						fire.y = i * 64;
+						fire.coord = {
+							"x": i,
+							"y": j
+						};
+						barriers.addChild(fire);
+					}
+					if (wrld[i][j] === "0") {
+						bg(i, j);
+					}
+					if (wrld[i][j] === "p") {
+						map.x -= j * 64 - 351;
+						map.y -= i * 64 - 576 / 2;
+						player.x = j * 64 - 351 + 32 + 702 / 2 + 2;
+						player.y = i * 64 - 576 / 2 - 32 + 578 / 2 - 32;
+						player.coord.x = j;
+						player.coord.y = i;
+						tall.push(player.sprite);
+						bg(i, j);
+					}
+					if (wrld[i][j] === "s") {
+						var stair = new PIXI.Sprite(PIXI.loader.resources["./assets/stair.png"].texture);
+						stair.anchor.x = 0.5;
+						stair.x = j * 64 + 32 + 1;
+						stair.y = i * 64;
+						stair.coord = {
+							"x": i,
+							"y": j
+						};
+						map.addChild(stair);
+					}
+					if (wrld[i][j] === "e") {
+						var slime = new _enemy2.default(50, function () {
+							return 5;
+						}, PIXI.loader.resources["./assets/slimebig.png"].texture, PIXI.loader.resources["./assets/slime.png"].texture);
+						slime.x += j * 64;
+						slime.y += i * 64;
+						slime.coord.x = j;
+						slime.coord.y = i;
+						enemies.push(slime);
+						bg(i, j);
+					}
+					if (wrld[i][j] === "r") {
+						var firerat = new _enemy2.default(150, function () {
+							return 10;
+						}, PIXI.loader.resources["./assets/fireratbig.png"].texture, PIXI.loader.resources["./assets/firerat.png"].texture);
+						firerat.x += j * 64;
+						firerat.y += i * 64 - 78;
+						firerat.coord.x = j;
+						firerat.coord.y = i;
+						enemies.push(firerat);
+						tall.push(firerat.sprite);
+						bg(i, j);
+					}
+					if (wrld[i][j] === "z") {
+						var zig = new _enemy2.default(500, function () {
+							return 25;
+						}, PIXI.loader.resources["./assets/zeegas.png"].texture, PIXI.loader.resources["./assets/zeegas.png"].texture, {
+							"dialogue": {
+								"start": ["Jaysun: Hello!", "Jaysun: My name’s Jaysun, what’s yours?", "???: You’re awfully young to be wandering here, any reason?", "Jaysun: Someone told me, there’s great powers hidden here!!", "???: Hmph, we have our dreams.", "???: I’d suggest your turn back now.", "Jaysun: What! Why?!", "???: A child like you doesn’t belong in this cave.", "Jaysun: I am strong!", "???: You’re a sorcerer, yes?", "Jaysun: Mhm, I’ve been practicing.", "???: How about, we duel. See how strong you really are.", "???: I’ll go easy."],
+								"end": ["???: You should turn back.", "Jaysun: No!", "*??? sighs*", "Zygas: The name’s Zygas. Good luck in the dungeon."]
+							}
+						});
+						zig.x = j * 64 + 32;
+						zig.y = i * 64 - 78;
+						zig.pure = true;
+						zig.coord.x = j;
+						zig.coord.y = i;
+						console.log(zig);
+						enemies.push(zig);
+						tall.push(zig.sprite);
+						bg(i, j);
+					}
+				}
+			}
+		}
+		build(worlds[0]);
+		window.loop = new _fps2.default(function () {
+			//console.log(slime.x,",",slime.y)
+			//console.log(player.x,",",player.y)
+			player.move();
+			if (world[player.coord.y][player.coord.x] === "s") {
+				while (stage.children[0]) {
+					stage.removeChild(stage.children[0]);
+				}
+				build(worlds[worlds.indexOf(world) + 1]);
+			}
+			enemies.forEach(function (val) {
+				if (val.coord.x === player.coord.x && val.coord.y === player.coord.y && val.valid !== false) {
+					loop.stop();
+					var battle = new _encounter2.default();
+					battle.start(player, val);
+				}
+			});
+			app.render(map);
+		});
 	}
 
 /***/ }),
@@ -523,7 +542,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var _class = function () {
-	    function _class(health, attack, big, small) {
+	    function _class(health, attack, big, small, extra) {
 	        _classCallCheck(this, _class);
 	
 	        this.health = health;
@@ -533,7 +552,10 @@
 	        this.sprite = new PIXI.Sprite(this.smallTex);
 	        this.sprite.anchor.x = 0.5;
 	        this.sprite.x = 32;
-	
+	        if (extra) {
+	            this.dialogue = extra.dialogue;
+	            this.block = extra.block || false;
+	        }
 	        this.maxHealth = health;
 	        this.health = health;
 	        this.coord = { "x": 0, "y": 0 };
@@ -592,8 +614,6 @@
 	        _classCallCheck(this, _class);
 	
 	        this.sprite = new PIXI.Sprite(PIXI.loader.resources["./assets/steve-stand.png"].texture);
-	        this.sprite.x = 702 / 2 + 2;
-	        this.sprite.y = 578 / 2 - 32;
 	        this.counter = 0;
 	        this.mode = "";
 	        this.sprite.anchor.x = 0.5;
@@ -602,7 +622,6 @@
 	        this.health = 50;
 	        this.maxMana = 50;
 	        this.mana = 50;
-	        map.addChild(this.sprite);
 	        this.spells = [new _spell2.default("Attack", ["A"], function (e, p) {
 	            e.health -= 10;
 	        }, 5, 3, 5, "slash", 14), new _spell2.default("Multiattack", ["Q", "A"], function (e, p) {
@@ -624,7 +643,9 @@
 	            var player = this;
 	
 	            if (player.mode !== "") {
-	                var testcheck = world[player.coord.y + player.mode[1] / 4][player.coord.x + player.mode[0] / 4] === "1"; //||
+	                var testcheck = world[player.coord.y + player.mode[1] / 4][player.coord.x + player.mode[0] / 4] === "1" || enemies.some(function (enem) {
+	                    return player.coord.y + player.mode[1] / 4 === enem.coord.y && player.coord.x + player.mode[0] / 4 === enem.coord.x && enem.block;
+	                }); //||
 	                //world[player.coord.y + player.mode[1] / 4][player.coord.x + player.mode[0] / 4] === "z";
 	                if (!testcheck) {
 	                    tall.sort(function (a, b) {
@@ -662,6 +683,7 @@
 	                    }
 	                } else {
 	                    player.mode = "";
+	                    player.sprite.texture = PIXI.loader.resources["./assets/steve-stand.png"].texture;
 	                }
 	            }
 	            key.check([87, 38], function () {
@@ -725,7 +747,7 @@
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+		value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -755,235 +777,214 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var _class = function () {
-	    function _class() {
-	        _classCallCheck(this, _class);
-	    }
+		function _class() {
+			_classCallCheck(this, _class);
+		}
 	
-	    _createClass(_class, [{
-	        key: "start",
-	        value: function start(player, enemy) {
-	            player.mana = player.maxMana;
-	            var playerHealth = new _statbar2.default(player.health, player.maxHealth, PIXI.loader.resources["./assets/hpstart.png"].texture, PIXI.loader.resources["./assets/hpbodyfill.png"].texture, PIXI.loader.resources["./assets/goldbody.png"].texture, PIXI.loader.resources["./assets/goldend.png"].texture);
-	            var playerMana = new _statbar2.default(player.mana, player.maxMana, PIXI.loader.resources["./assets/mpstart.png"].texture, PIXI.loader.resources["./assets/mpbodyfill.png"].texture, PIXI.loader.resources["./assets/goldbody.png"].texture, PIXI.loader.resources["./assets/goldend.png"].texture);
-	            if (enemy.pure) {
-	                var enemyHealth = new _statbar2.default(enemy.health, enemy.maxHealth, PIXI.loader.resources["./assets/hpblue.png"].texture, PIXI.loader.resources["./assets/mpbodyfill.png"].texture, PIXI.loader.resources["./assets/goldbody.png"].texture, PIXI.loader.resources["./assets/goldend.png"].texture);
-	            } else {
-	                var enemyHealth = new _statbar2.default(enemy.health, enemy.maxHealth, PIXI.loader.resources["./assets/evstart.png"].texture, PIXI.loader.resources["./assets/evbodyfill.png"].texture, PIXI.loader.resources["./assets/evbody.png"].texture, PIXI.loader.resources["./assets/evend.png"].texture);
-	            }
-	            playerMana.sprite.y = 32;
-	            playerHealth.sprite.y = 318;
-	            playerMana.sprite.y = 350;
-	            enemyHealth.sprite.x = 698 - enemyHealth.sprite.width;
-	            battle.addChild(playerHealth.sprite);
-	            battle.addChild(playerMana.sprite);
-	            battle.addChild(enemyHealth.sprite);
-	            var obj = this;
-	            var slashes = [];
-	            obj.counter = 0;
-	            var active = "";
-	            var casting = function casting() {};
-	            var spellContainer = new PIXI.Container();
+		_createClass(_class, [{
+			key: "start",
+			value: function start(player, enemy) {
+				console.log(battle.children);
+				player.mana = player.maxMana;
+				//Establish statbars for both the player and the enemy. If the player is allied (NPC) use a pure healthbar
+				var playerHealth = new _statbar2.default(player.health, player.maxHealth, PIXI.loader.resources["./assets/hpstart.png"].texture, PIXI.loader.resources["./assets/hpbodyfill.png"].texture, PIXI.loader.resources["./assets/goldbody.png"].texture, PIXI.loader.resources["./assets/goldend.png"].texture);
+				var playerMana = new _statbar2.default(player.mana, player.maxMana, PIXI.loader.resources["./assets/mpstart.png"].texture, PIXI.loader.resources["./assets/mpbodyfill.png"].texture, PIXI.loader.resources["./assets/goldbody.png"].texture, PIXI.loader.resources["./assets/goldend.png"].texture);
+				if (enemy.pure) {
+					var enemyHealth = new _statbar2.default(enemy.health, enemy.maxHealth, PIXI.loader.resources["./assets/hpblue.png"].texture, PIXI.loader.resources["./assets/mpbodyfill.png"].texture, PIXI.loader.resources["./assets/goldbody.png"].texture, PIXI.loader.resources["./assets/goldend.png"].texture);
+				} else {
+					var enemyHealth = new _statbar2.default(enemy.health, enemy.maxHealth, PIXI.loader.resources["./assets/evstart.png"].texture, PIXI.loader.resources["./assets/evbodyfill.png"].texture, PIXI.loader.resources["./assets/evbody.png"].texture, PIXI.loader.resources["./assets/evend.png"].texture);
+				}
+				playerMana.sprite.y = 32;
+				playerHealth.sprite.y = 318;
+				playerMana.sprite.y = 350;
+				enemyHealth.sprite.x = 698 - enemyHealth.sprite.width;
+				battle.addChild(playerHealth.sprite);
+				battle.addChild(playerMana.sprite);
+				battle.addChild(enemyHealth.sprite);
+				//other various global declarations
+				var obj = this;
+				var active = "";
+				var casting = function casting() {};
+				var spellContainer = new PIXI.Container();
+				window.animate = new _animate2.default();
 	
-	            window.animate = new _animate2.default();
+				function turn() {
+					animate.addBreak(function (cb) {
+						//Bring up spell casting menu and handle spellcasting. TODO: Add animation syntax.
+						player.spells.forEach(function (spl, index) {
+							//Declare various pixijs elements and add them to the stage, position them
+							var spellHold = new PIXI.Container();
+							var spell = new PIXI.Sprite(_shapes2.default.rectangle(160, 64, "#ddd"));
+							var text = new PIXI.Text(spl.name, {
+								fontFamily: 'Mono',
+								fontSize: 16,
+								fill: 0x000,
+								wordWrap: true,
+								wordWrapWidth: 140
+							});
+							text.x = 10;
+							text.y = 10;
+							spellHold.addChild(spell);
+							spellHold.addChild(text);
+							spellHold.x = index % 3 * 248 + 24;
+							spell.buttonMode = true;
+							spell.interactive = true;
+							spellHold.y = 410 + Math.floor(index / 3) * 72;
+							//Whenever a spell is clicked spend mana / hp and initiate spell power
+							spell.on("click", function () {
+								active = spl;
+								if (player.mana < spl.cost) {
+									player.health -= Math.ceil((spl.cost - player.mana) / 5);
+									player.mana = 0;
+								} else {
+									player.mana -= spl.cost;
+								}
+								playerHealth.fill.width = player.health;
+								if (player.health <= 0) {
+									playerHealth.fill.width = 0;
+								}
+								playerMana.fill.width = player.mana;
+								if (player.mana <= 0) {
+									playerMana.fill.width = 0;
+								}
+								casting = spl.initiate();
+								cb();
+							});
+							spellContainer.addChild(spellHold);
+						});
+						battle.addChild(spellContainer);
+					}).addBreak(function (cb) {
+						//Get rid of spellcasting menu
+						spellContainer.children = "";
+						spellContainer = new PIXI.Container();
+						cb();
+					}).addLoopingBreak(function (cb) {
+						//Handle spellcasting and spellcasting animations
+						casting(function () {
+							if (enemy.health <= 0) {
+								casting(function () {}, function () {}, true);
+								enemyHealth.fill.width = 0;
+								cb();
+							} else {
+								enemyHealth.fill.width = enemy.health;
+								var slash = new PIXI.Sprite(PIXI.loader.resources["./assets/" + active.anim + "/1.png"].texture);
+								slash.x = 702 / 2 + Math.random() * 100 - 50;
+								slash.anchor.x = 0.5;
+								slash.y = 64 + enemy.sprite.height / 2 + Math.random() * 100 - 50;
+								slash.anchor.y = 0.5;
+								battle.addChild(slash);
+								animate.addAsync(active.animFrames, function (x) {
+									slash.texture = PIXI.loader.resources["./assets/" + active.anim + "/" + x + ".png"].texture;
+								}, function () {
+									battle.removeChild(slash);
+								});
+							}
+						}, cb, false, enemy, player);
+					}).addLoopingBreak(function (cb) {
+						//If enemy is dying, end the loop.
+						if (enemy.health <= 0) {
+							enemy.sprite.alpha -= 0.05;
+							if (enemy.sprite.alpha <= 0) {
+								console.log("end encounter, give gold");
+								battle.alpha = 1;
+								map.alpha = 0;
+								animate.addFrame(20, function () {
+									battle.alpha -= 0.05;
+									map.alpha += 0.05;
+								}, function () {
+									stage.addChild(map);
+									stage.removeChild(battle);
+									map.removeChild(enemy);
+									enemies.splice(enemies.indexOf(enemy), 1);
+									battle.children.forEach(function (child) {
+										battle.removeChild(child);
+									});
+									loop.start();
+									obj.timer.stop();
+								}).addBreak();
+								cb();
+							}
+						} else {
+							cb();
+						}
+					}).addBreak(function (cb) {
+						player.health -= enemy.attack();
+						playerHealth.fill.width = player.health;
+						if (player.health <= 0) {
+							var end = function end() {
+								enemy.x = enemy.coord.x * 64 + 32;
+								enemy.y = enemy.coord.y * 64 - 78;
+								enemy.valid = false;
+								stage.addChild(map);
+								stage.removeChild(battle);
+								map.alpha = 1;
+								if (!enemy.pure) {
+									map.removeChild(enemy);
+									enemies.splice(enemies.indexOf(enemy), 1);
+								} else {
+									map.addChild(enemy.sprite);
+									enemy.block = true;
+								}
+								battle.children.forEach(function (child) {
+									battle.removeChild(child);
+								});
+								loop.start();
+								obj.timer.stop();
+								cb();
+							};
 	
-	            function turn() {
-	                animate.addFrame(0, function (cb) {
-	                    //Bring up spell casting menu and handle spellcasting. TODO: Add animation syntax.
-	                    player.spells.forEach(function (spl, index) {
-	                        var spellHold = new PIXI.Container();
-	                        var spell = new PIXI.Sprite(_shapes2.default.rectangle(160, 64, "#ddd"));
-	                        var text = new PIXI.Text(spl.name, { fontFamily: 'Mono', fontSize: 16, fill: 0x000, wordWrap: true, wordWrapWidth: 140 });
-	                        text.x = 10;
-	                        text.y = 10;
-	                        spellHold.addChild(spell);
-	                        spellHold.addChild(text);
-	                        spellHold.x = index % 3 * 248 + 24;
-	                        spell.buttonMode = true;
-	                        spell.interactive = true;
-	                        spellHold.y = 410 + Math.floor(index / 3) * 72;
-	                        spell.on("click", function () {
-	                            active = spl;
-	                            if (player.mana < spl.cost) {
-	                                player.health -= Math.ceil((spl.cost - player.mana) / 5);
-	                                player.mana = 0;
-	                            } else {
-	                                player.mana -= spl.cost;
-	                            }
-	                            playerHealth.fill.width = player.health;
-	                            if (player.health <= 0) {
-	                                playerHealth.fill.width = 0;
-	                            }
-	                            playerMana.fill.width = player.mana;
-	                            if (player.mana <= 0) {
-	                                playerMana.fill.width = 0;
-	                            }
-	                            casting = spl.initiate();
-	                            cb();
-	                        });
-	                        spellContainer.addChild(spellHold);
-	                    });
-	                    battle.addChild(spellContainer);
-	                }).addFrame(0, function (cb) {
-	                    //Get rid of spellcasting menu
-	                    spellContainer.children = "";
-	                    spellContainer = new PIXI.Container();
-	                    cb();
-	                }).addFrame(-1, function (cb) {
-	                    //Handle spellcasting and spellcasting animations
-	                    casting(function () {
-	                        if (enemy.health <= 0) {
-	                            casting(function () {}, function () {}, true);
-	                            enemyHealth.fill.width = 0;
-	                            cb();
-	                        } else {
-	                            enemyHealth.fill.width = enemy.health;
-	                            var slash = new PIXI.Sprite(PIXI.loader.resources["./assets/" + active.anim + "/1.png"].texture);
-	                            slash.x = 702 / 2 + Math.random() * 100 - 50;
-	                            slash.anchor.x = 0.5;
-	                            slash.y = 64 + enemy.sprite.height / 2 + Math.random() * 100 - 50;
-	                            slash.anchor.y = 0.5;
-	                            battle.addChild(slash);
-	                            animate.addAsync(active.animFrames, function (x) {
-	                                slash.texture = PIXI.loader.resources["./assets/" + active.anim + "/" + x + ".png"].texture;
-	                            }, function () {
-	                                battle.removeChild(slash);
-	                            });
-	                        }
-	                    }, cb, false, enemy, player);
-	                }).addFrame(-1, function (cb) {
-	                    //If enemy is dying, end the loop.
-	                    if (enemy.health <= 0) {
-	                        enemy.sprite.alpha -= 0.05;
-	                        if (enemy.sprite.alpha <= 0) {
-	                            console.log("end encounter, give gold");
-	                            battle.alpha = 1;
-	                            map.alpha = 0;
-	                            animate.addFrame(20, function () {
-	                                battle.alpha -= 0.05;
-	                                map.alpha += 0.05;
-	                            }, function () {
-	                                stage.addChild(map);
-	                                stage.removeChild(battle);
-	                                map.removeChild(enemy);
-	                                enemies.splice(enemies.indexOf(enemy), 1);
-	                                loop.start();
-	                                obj.timer.stop();
-	                                battle.children.forEach(function (child) {
-	                                    battle.removeChild(child);
-	                                });
-	                            });
-	                            cb();
-	                        }
-	                    } else {
-	                        cb();
-	                    }
-	                }).addFrame(0, function (cb) {
-	                    player.health -= enemy.attack();
-	                    playerHealth.fill.width = player.health;
-	                    if (player.health <= 0) {
-	                        casting(function () {}, function () {}, true);
-	                        new _dialogue2.default(["???: You should turn back.", "Jaysun: No!", "*??? sighs*", "Zygas: The name’s Zygas. Good luck in the dungeon."], cb);
-	                    } else {
-	                        turn();
-	                        cb();
-	                    }
-	                });
-	            }
+							casting(function () {}, function () {}, true);
 	
-	            //
-	            animate.addFrame(20, function () {
-	                map.alpha -= 0.05;
-	            }).addFrame(0, function (cb) {
-	                //Initialize the battle with a frameless frame
-	                stage.removeChild(map);
-	                stage.addChild(battle);
-	                map.removeChild(enemy.sprite);
-	                battle.addChild(enemy.sprite);
-	                battle.alpha = 0;
-	                enemy.sprite.texture = enemy.bigTex;
-	                enemy.x = 702 / 2;
-	                enemy.y = 64;
-	                obj.counter += 1;
-	                var wrapper = new PIXI.Sprite(PIXI.loader.resources["./assets/dialoguebox.png"].texture);
-	                wrapper.y = 384;
-	                battle.addChild(wrapper);
-	                cb();
-	            }).addFrame(20, function () {
-	                //Fade in the battle
-	                battle.alpha += 0.05;
-	            });
-	            animate.addFrame(0, function (cb) {
-	                //Check if there is dialogue for the encounter, otherwise skip
-	                if (enemy.pure && worlds.indexOf(world) === 0) {
-	                    new _dialogue2.default(["Jaysun: Hello!", "Jaysun: My name’s Jaysun, what’s yours?", "???: You’re awfully young to be wandering here, any reason?", "Jaysun: Someone told me, there’s great powers hidden here!!", "???: Hmph, we have our dreams.", "???: I’d suggest your turn back now.", "Jaysun: What! Why?!", "???: A child like you doesn’t belong in this cave.", "Jaysun: I am strong!", "???: You’re a sorcerer, yes?", "Jaysun: Mhm, I’ve been practicing.", "???: How about, we duel. See how strong you really are.", "???: I’ll go easy."], cb);
-	                } else {
-	                    console.log("JESUS");
-	                    cb();
-	                }
-	            });
-	            turn();
-	            /* else{
-	                
-	                    player.health -= enemy.attack();
-	                    playerHealth.fill.width = player.health;
-	                    obj.counter = 40;
-	                    if(player.health <= 0){
-	                        obj.timer.stop()
-	                        casting(function(){},function(){},true);
-	                        let dialogue = -1;
-	                        let dialogueList = [
-	                            "???: You should turn back.",
-	                            "Jaysun: No!",
-	                            "*??? sighs*",
-	                            "Zygas: The name’s Zygas. Good luck in the dungeon."
-	                                  ]
-	                        let txt = new PIXI.Text("",{fontFamily : 'Mono', fontSize: 24, fill : 0xffffff,wordWrap:true,wordWrapWidth:666});
-	                        txt.x = 26;
-	                        txt.y = 412;
-	                        battle.addChild(txt);
-	                        txt.text = dialogueList[0]
-	                        function awaitEnter(){
-	                            dialogue ++;
-	                            txt.text = dialogueList[dialogue]
-	                            if(dialogue === dialogueList.length){
-	                                enemy.valid = false;
-	                                stage.addChild(map);
-	                                stage.removeChild(battle);
-	                                map.alpha = 1;
-	                                if(!enemy.pure){map.removeChild(enemy);
-	                                enemies.splice(enemies.indexOf(enemy),1)
-	                                } else{
-	                                    map.addChild(enemy.sprite);
-	                                }
-	                                loop.start();
-	                                obj.timer.stop();
-	                                battle.children.forEach(function(child){
-	                                    battle.removeChild(child);
-	                                })
-	                            } else{
-	                                key.waitDown(13,awaitEnter,false,true)
-	                            }
-	                        }
-	                        awaitEnter()
-	                    }
-	            }
-	            */
-	            obj.timer = new _fps2.default(function () {
-	                animate.tick();
-	                /*slashes.forEach(function(val,i){
-	                    val.increment += 1;
-	                    if(val.increment >= active.animFrames){
-	                        battle.removeChild(val);
-	                        slashes.splice(i,1);
-	                      } else{
-	                        val.texture = PIXI.loader.resources["./assets/"+active.anim+"/"+val.increment+".png"].texture;
-	                    }
-	                })*/
-	            });
-	        }
-	    }]);
+							if (enemy.dialogue) {
+								new _dialogue2.default(enemy.dialogue.end, end);
+							} else {
+								end();
+							}
+						} else {
+							turn();
+							cb();
+						}
+					});
+				}
+				//
+				animate.addFrame(20, function () {
+					map.alpha -= 0.05;
+				}).addBreak(function (cb) {
+					//Initialize the battle with a frameless frame
+					stage.removeChild(map);
+					stage.addChild(battle);
+					map.removeChild(enemy.sprite);
+					battle.addChild(enemy.sprite);
+					battle.alpha = 0;
+					enemy.sprite.texture = enemy.bigTex;
+					enemy.x = 702 / 2;
+					enemy.y = 64;
+					obj.counter += 1;
+					var wrapper = new PIXI.Sprite(PIXI.loader.resources["./assets/dialoguebox.png"].texture);
+					wrapper.y = 384;
+					battle.addChild(wrapper);
+					cb();
+				}).addFrame(20, function () {
+					//Fade in the battle
+					battle.alpha += 0.05;
+				});
+				animate.addBreak(function (cb) {
+					//Check if there is dialogue for the encounter, otherwise skip
+					if (enemy.dialogue) {
+						new _dialogue2.default(enemy.dialogue.start, cb);
+					} else {
+						console.log("JESUS");
+						cb();
+					}
+				});
+				turn();
+				obj.timer = new _fps2.default(function () {
+					animate.tick();
+				});
+			}
+		}]);
 
-	    return _class;
+		return _class;
 	}();
 
 	exports.default = _class;
@@ -1146,7 +1147,21 @@
 		_createClass(_class, [{
 			key: "addFrame",
 			value: function addFrame(duration, func, callback) {
+				func = func || function () {};
+				callback = callback || function () {};
 				this.frames.push(new Frame(duration, func, callback, "sync"));
+				return this;
+			}
+		}, {
+			key: "addBreak",
+			value: function addBreak(func, callback) {
+				this.addFrame(0, func, callback);
+				return this;
+			}
+		}, {
+			key: "addLoopingBreak",
+			value: function addLoopingBreak(func, callback) {
+				this.addFrame(-1, func, callback);
 				return this;
 			}
 		}, {
@@ -1184,50 +1199,58 @@
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+		value: true
 	});
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var _class = function _class(text, cb) {
-	    _classCallCheck(this, _class);
+		_classCallCheck(this, _class);
 	
-	    var dialogueList = text;
-	    var txt = new PIXI.Text("", { fontFamily: 'Mono', fontSize: 24, fill: 0xffffff, wordWrap: true, wordWrapWidth: 666 });
-	    txt.x = 26;
-	    txt.y = 412;
-	    battle.addChild(txt);
-	    var dialogue = -1;
-	    function txtAnim(text, callback) {
-	        var total = "";
-	        var dia = void 0;
-	        if (text.indexOf(":") === -1) {
-	            dia = ["", text];
-	        } else {
-	            dia = text.split(":");
-	        }
-	        animate.addAsync(dia[1].length * 1 + 1, function (x, a) {
-	            if (dia[1][x] === " ") {
-	                a.tick(a);
-	            } else if (x % 1 === 0) {
-	                txt.text = dia[0] + ":" + dia[1].substring(0, x / 1);
-	            }
-	        }, callback);
-	    }
-	    function awaitEnter() {
-	        dialogue++;
-	        txtAnim(dialogueList[dialogue], function () {
-	            if (dialogue === dialogueList.length - 1) {
-	                animate.async = [];
-	                txt.text = "";
-	                console.log("JESUS");
-	                cb();
-	            } else {
-	                key.waitDown(13, awaitEnter, false, true);
-	            }
-	        });
-	    }
-	    awaitEnter();
+		var dialogueList = text;
+		var txt = new PIXI.Text("", {
+			fontFamily: 'Mono',
+			fontSize: 24,
+			fill: 0xffffff,
+			wordWrap: true,
+			wordWrapWidth: 666
+		});
+		txt.x = 26;
+		txt.y = 412;
+		battle.addChild(txt);
+		var dialogue = -1;
+	
+		function txtAnim(text, callback) {
+			var total = "";
+			var dia = void 0;
+			if (text.indexOf(":") === -1) {
+				dia = ["", text];
+			} else {
+				dia = text.split(":");
+			}
+			animate.addAsync(dia[1].length * 1 + 1, function (x, a) {
+				if (dia[1][x] === " ") {
+					a.tick(a);
+				} else if (x % 1 === 0) {
+					txt.text = dia[0] + ":" + dia[1].substring(0, x / 1);
+				}
+			}, callback);
+		}
+	
+		function awaitEnter() {
+			dialogue++;
+			if (dialogue === dialogueList.length) {
+				animate.async = [];
+				battle.removeChild(txt);
+				console.log("JESUS");
+				cb();
+			} else {
+				txtAnim(dialogueList[dialogue], function () {
+					key.waitDown(13, awaitEnter, false, true);
+				});
+			}
+		}
+		awaitEnter();
 	};
 	
 	exports.default = _class;

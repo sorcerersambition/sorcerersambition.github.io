@@ -54,7 +54,17 @@ export default class{
 	    * A function to be run after the completion of the animation
 	*/
 	addFrame(duration, func, callback) {
+		func = func || function(){}
+		callback = callback || function(){}
 		this.frames.push(new Frame(duration, func, callback,"sync"));
+		return this;
+	}
+	addBreak(func,callback){
+		this.addFrame(0,func,callback);
+		return this;
+	}
+	addLoopingBreak(func,callback){
+		this.addFrame(-1,func,callback);
 		return this;
 	}
 	addAsync(duration,func,callback){

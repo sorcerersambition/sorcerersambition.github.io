@@ -1,5 +1,5 @@
 export default class{
-    constructor(health,attack,big,small){
+    constructor(health,attack,big,small,extra){
         this.health = health
         this.attack = attack
         this.bigTex = big
@@ -7,7 +7,10 @@ export default class{
         this.sprite = new PIXI.Sprite(this.smallTex);
         this.sprite.anchor.x = 0.5;
         this.sprite.x = 32;
-
+        if(extra){
+            this.dialogue = extra.dialogue;
+            this.block = extra.block || false;
+        }
         this.maxHealth = health;
         this.health = health;
         this.coord = {"x":0,"y":0}

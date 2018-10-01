@@ -3,8 +3,6 @@ import Spell from "./spell.js";
 export default class{
     constructor(){
         this.sprite = new PIXI.Sprite(PIXI.loader.resources["./assets/steve-stand.png"].texture);
-        this.sprite.x = 702/2 + 2
-        this.sprite.y = 578/2 - 32
         this.counter = 0
         this.mode = ""
         this.sprite.anchor.x = 0.5;
@@ -13,7 +11,6 @@ export default class{
         this.health = 50;
         this.maxMana = 50;
         this.mana = 50;
-        map.addChild(this.sprite);
         this.spells = [
             new Spell("Attack",["A"],function(e,p){e.health-=10},5,3,5,"slash",14),
             new Spell("Multiattack",["Q","A"],function(e,p){e.health -= 5;},5,25,10,"slash",14),
@@ -27,7 +24,9 @@ export default class{
         let player = this
 
         if(player.mode !== ""){
-            let testcheck = world[player.coord.y + player.mode[1] / 4][player.coord.x + player.mode[0] / 4] === "1" //||
+            let testcheck = world[player.coord.y + player.mode[1] / 4][player.coord.x + player.mode[0] / 4] === "1" || enemies.some(function(enem){
+                return player.coord.y + player.mode[1] / 4 === enem.coord.y && player.coord.x + player.mode[0] / 4 === enem.coord.x && enem.block
+            }) //||
             //world[player.coord.y + player.mode[1] / 4][player.coord.x + player.mode[0] / 4] === "z";
             if(!testcheck){
                 tall.sort(function(a,b){
@@ -66,6 +65,7 @@ export default class{
                 }
             } else{
                 player.mode = ""
+                player.sprite.texture = PIXI.loader.resources["./assets/steve-stand.png"].texture;
             }
           }
           key.check([87,38], function() {
